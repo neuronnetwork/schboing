@@ -1,0 +1,116 @@
+Parsing Input...
+Compiling...
+Standard Output from javac:
+
+/tmp/jc_9913/evolvePDE.java:295: warning: [deprecation] show() in Window has been deprecated
+      f.show();
+       ^
+/tmp/jc_9913/evolvePDE.java:689: warning: [deprecation] disable() in Component has been deprecated
+      button.disable();
+            ^
+/tmp/jc_9913/evolvePDE.java:692: warning: [deprecation] disable() in Component has been deprecated
+      button1.disable();  
+             ^
+/tmp/jc_9913/evolvePDE.java:717: warning: [deprecation] action(Event,Object) in Component has been deprecated
+      public boolean action(Event evt, Object arg) {   
+                     ^
+/tmp/jc_9913/evolvePDE.java:720: warning: [deprecation] disable() in Component has been deprecated
+                  button.disable();
+                        ^
+/tmp/jc_9913/evolvePDE.java:729: warning: [deprecation] disable() in Component has been deprecated
+                   button1.disable();
+                          ^
+/tmp/jc_9913/evolvePDE.java:737: warning: [deprecation] disable() in Component has been deprecated
+                button.disable();
+                      ^
+/tmp/jc_9913/evolvePDE.java:819: warning: [deprecation] enable() in Component has been deprecated
+        button.enable();
+              ^
+/tmp/jc_9913/evolvePDE.java:825: warning: [deprecation] enable() in Component has been deprecated
+        button1.enable();
+               ^
+/tmp/jc_9913/evolvePDE.java:826: warning: [deprecation] enable() in Component has been deprecated
+        button.enable();
+              ^
+/tmp/jc_9913/evolvePDE.java:1141: warning: [deprecation] hide() in Component has been deprecated
+      l[i].hide();
+          ^
+/tmp/jc_9913/evolvePDE.java:1142: warning: [deprecation] hide() in Component has been deprecated
+      t[i].hide();
+          ^
+/tmp/jc_9913/evolvePDE.java:1152: warning: [deprecation] show() in Component has been deprecated
+      l[i].show();
+          ^
+/tmp/jc_9913/evolvePDE.java:1153: warning: [deprecation] show() in Component has been deprecated
+      t[i].show();
+          ^
+/tmp/jc_9913/evolvePDE.java:1163: warning: [deprecation] show() in Component has been deprecated
+            l[i].show();
+                ^
+/tmp/jc_9913/evolvePDE.java:1164: warning: [deprecation] show() in Component has been deprecated
+            t[i].show();
+                ^
+/tmp/jc_9913/evolvePDE.java:1175: warning: [deprecation] disable() in Component has been deprecated
+          t[i].disable();
+              ^
+/tmp/jc_9913/evolvePDE.java:1185: warning: [deprecation] enable() in Component has been deprecated
+          t[i].enable();
+              ^
+/tmp/jc_9913/evolvePDE.java:1188: warning: [deprecation] insets() in Container has been deprecated
+   public Insets insets() {
+                 ^
+/tmp/jc_9913/evolvePDE.java:1291: warning: [deprecation] insets() in Container has been deprecated
+      public Insets insets() {
+                    ^
+/tmp/jc_9913/evolvePDE.java:2304: warning: [deprecation] show() in Window has been deprecated
+      f.show();
+       ^
+/tmp/jc_9913/evolvePDE.java:2752: warning: [deprecation] show() in Window has been deprecated
+	f.show();
+	 ^
+22 warnings
+
+Output File(s)
+Bar.class
+Barkley.class
+Be_lpn.class
+Brusselator.class
+CCGL.class
+CGL.class
+circPallette.class
+CODE.class
+coupledODE.class
+DitherCanvas.class
+DitherControls.class
+DitherTest.class
+Entwicklung.class
+evolvePDE.class
+fdPDE.class
+FFT2D.class
+FHN.class
+greyPallette.class
+Ki_lpn.class
+Lattice.class
+Lifshitz.class
+Lpn.class
+myPallette.class
+NN.class
+PDE.class
+Pfeiler.class
+Phase.class
+plotCanvas.class
+plotChoiceControls.class
+plotControls.class
+QUAD.class
+RGBPallette.class
+RNL.class
+Schnackenberg.class
+SH.class
+SH2.class
+spectralPDE.class
+Sternzelle.class
+textControls.class
+Uebereinstimmung.class
+Zellnetz$Inner_plot_controls.class
+Zellnetz.class
+ 
