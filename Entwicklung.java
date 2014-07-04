@@ -47,7 +47,7 @@ public static void main(String args[]) {
 /*
  * laufend:   laufend4784864684864684684684687 -> true 
  * 
- * /
+ */
 }
 
 
