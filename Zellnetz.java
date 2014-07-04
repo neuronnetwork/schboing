@@ -75,8 +75,6 @@ public class Zellnetz extends  evolvePDE {
 		
 		nimmNN().rbn=diePfeiler[0];
 		nimmNN().rbn.Unruhe(); 
-		if((nimmNN().EBM.Breite()>plotwidth) ||(nimmNN().EBM.Breite()>plotwidth) )
-			System.out.println("Ich mag nicht, daß Breite() = plotwidth + etwas kleines. um Verbesserung857872 zu verbessern");//throw new AssertionError("");
 		
 			if(!APPLET)
 			frame_or_applet=new Frame("Astro");
@@ -84,7 +82,8 @@ public class Zellnetz extends  evolvePDE {
 			frame_or_applet=this;
 		}
 	
-	public static double get_dt(){ 
+	public static double get_dt(){  
+		if(true)return  0.06;/////28MAI 2014!
 		return evolvePDE.dt;//*0.02;
 	}
 	public static double get_reaction_dt(){ 
@@ -275,6 +274,13 @@ if(true)      topPanel.add(parameterControls);
        
         // Start thread for evolving
         appletThreadGroup = Thread.currentThread().getThreadGroup();      
+	
+		if((nimmNN().EBM.Breite()>plotwidth) ||(nimmNN().EBM.Breite()>plotheight) ){
+			System.out.println("Ich mag nicht, daß Breite() = plotwidth + etwas kleines. um Verbesserung857872 zu verbessern");//throw new AssertionError("");
+			System.out.println("nimmNN().EBM.Breite()="+nimmNN().EBM.Breite());
+			System.out.println("plotwidth="+plotwidth);
+			System.out.println("plotheight="+plotheight); 
+		}
 	}
 		
 	   public void run() {
@@ -593,10 +599,17 @@ synchronized(diePfeiler[0].pds){
 					int By=B;
 					if(!Verbesserung857872){//sehe auch 546846874684864
 						Bx=plotwidth;By=plotheight;
-					}else
+					}else 
 					if((x<0)||(!(x<Bx))||(y<0)||(!(y<By)))
 					                                     throw new AssertionError(x+" "+y+" "+"x<0 oder . ..");
 					int sieben=topologischeBoltzmannmaschine.Beispiel().Sache();
+				for(int i=0 ;i<sieben;i++)  
+							for(int j=0 ;j<sieben;j++) 	{  
+					if( ((y+j)%By<0)||(!((y+j)%By<By)))
+					                                     throw new AssertionError(x+" "+y+" "+" "+Bx+" "+By+"x<0 oder . ..");
+	 				if( ((x+i)%Bx<0)||(!((x+i)%Bx<Bx)))
+				                                     throw new AssertionError(x+" "+y+" "+" "+Bx+" "+By+"x<0 oder . ..");
+							}
 					for(int i=0 ;i<sieben;i++)  
 							for(int j=0 ;j<sieben;j++) 	
 								data[(x+i)%Bx][(y+j)%By]|=Farbe;

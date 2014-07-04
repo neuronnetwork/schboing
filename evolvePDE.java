@@ -15,7 +15,7 @@ import java.awt.image.MemoryImageSource;
 import java.lang.InterruptedException;
 import java.io.*;
 import java.net.*; 
-
+import static dissipativeneuron.Entwicklung.paintPB; 
 
 public class evolvePDE extends Applet implements Runnable {
 
@@ -301,7 +301,8 @@ public class evolvePDE extends Applet implements Runnable {
 //            Don't seem to need next line 5/27/99
 //            canvas.setImage(null);            // Wipe previous image
               Image img = calculateImage();
-              synchronized(this) {
+			  synchronized(this)
+			  {
                   if (img != null && runner == Thread.currentThread())
                       canvas.setImage(img);
               }
@@ -1631,7 +1632,7 @@ public class evolvePDE extends Applet implements Runnable {
  
 
   class plotCanvas extends Canvas {
-  static int done ;
+  static int done,toomuch ;
     Image img;
     boolean scalePlot=true;
     int plotwidth, plotheight,w,h; 
@@ -1640,33 +1641,51 @@ public class evolvePDE extends Applet implements Runnable {
 		super();
 		plotwidth=0;
 		plotheight=0;
-		done=0;
+		done=0;toomuch=0;
+		img=null;
 	}
 	
-    public void paint(Graphics g) {
-	  if((getSize().height<1)||(getSize().width<1))
-		return;
-	  if((plotheight<1)||(plotwidth<1))
-		return;
+    public synchronized void paint(Graphics g) {
+		if(paintPB&&(toomuch<30))
+		if(true){	
+			g.setColor(Color.blue);  
+			g.drawRect(0, 0, getSize().width-1,  getSize().height-1);  
+			g.drawString("TEST   "+(int)(Math.random()*100),20,30); 
+		} 
       if(scalePlot) { 
+			if((getSize().height<1)||(getSize().width<1)){
+				if(paintPB&&(toomuch<30)) System.out.println("(getSize().height<1)||(getSize().width<1)!");
+				return;
+			}
           w = getSize().width;
           h = getSize().height;
           if(false)//squared
 			w=h= (w < h) ? w : h; 
       }
-      else {
+      else { 
+			if((plotheight<1)||(plotwidth<1)){
+				if(paintPB&&(toomuch<30)) System.out.println("(plotheight<1)||(plotwidth<1)! "); 
+				return;
+			}
           w=plotwidth;
           h=plotheight;
       }        
  
-	if(false)System.out.println("Painting on "+plotwidth+" x "+plotheight+" pixels.");
-    if (img == null) {
-//        throw new AssertionError("  img == null  ");
-		//  super.paint(g);
-      } else {              
-			g.setColor(Color.red);  
+	if(paintPB&&(toomuch<30))if(true)System.out.println("Painting on "+w+" x "+h+" pixels.");  
+	g.setColor(Color.red);  
 
-			if(done<10){ g.drawRect(2, 2, w-4, h );done++;}
+	if(done<10){ g.drawRect(2, 2, w-4, h );done++;}
+    if (img == null) {
+			if(true){
+				g.setColor(Color.blue);  
+            g.drawRect(2, 2, getSize().width,  getSize().height );  
+			if(paintPB&&(toomuch<30))System.out.println("img==null!");
+			g.drawString("  img == null  ",10,20);
+			System.out.flush(); 
+//        throw new AssertionError("  img == null  ");
+			}
+		 if(false) super.paint(g);
+      } else {            
 			g.drawImage(img, 10, 10, w-20, h , this);
 			double B=(int)(double)topologischeBoltzmannmaschine.Beispiel().Breite();
 			double scalex=evolvePDE.scalexy; 
@@ -1674,11 +1693,15 @@ public class evolvePDE extends Applet implements Runnable {
 			if(true){scalex=(int)(w/B);
 			scaley=scalex;
 			}
-			System.out.println("scalexy="+scalex); 
-			System.out.println("w="+w);
-			System.out.println("h="+h);
-			System.out.println("B="+B);
-			System.out.println();
+			if(paintPB&&(toomuch<30)){
+				System.out.println("scalexy="+scalex); 
+				 System.out.println("w="+w);
+				 System.out.println("h="+h);
+				 System.out.println("B="+B);
+				 System.out.println();
+				 if(toomuch++>=30)
+					System.out.println("toomuch++>=30");
+			}
 			g.setColor(Color.blue);  
 			if(false)g.drawRect(10, 10,(int)(double)B,(int)(double)B ); 
 			g.setColor(Color.green);   
@@ -1686,11 +1709,24 @@ public class evolvePDE extends Applet implements Runnable {
       }
     }
 
-    public void update(Graphics g) {
-      paint(g);
+    public synchronized void update(Graphics g) {
+		if(true){
+			if(scalePlot)
+			if((getSize().height<1)||(getSize().width<1)){
+				if(paintPB&&(toomuch<30))System.out.println("update : (getSize().height<1)||(getSize().width<1)!");
+				return;
+			} 
+			if(!scalePlot)
+			if((plotheight<1)||(plotwidth<1)){
+				if(paintPB&&(toomuch<30))System.out.println("update  :   (plotheight<1)||(plotwidth<1)! "); 
+				return;
+			} 
+		}
+	if(paintPB&&(toomuch<30))if(true)System.out.println("update. getSize().width="+getSize().width+" x "+getSize().height+" pixels.");
+       paint(g);
     }
     
-    public void setSize(int width, int height) { //von java.awt.Container.doLayout angeruft 
+    public synchronized void setSize(int width, int height) { //von java.awt.Container.doLayout angeruft 
 		  if((height<1)||(width<1))// Es ist zu klein! 0 pixels.
 						// at plotCanvas.setSize(evolvePDE.java:1665)
 						// at java.awt.BorderLayout.layoutContainer(Unknown Source)
@@ -1703,15 +1739,17 @@ public class evolvePDE extends Applet implements Runnable {
 						// at sun.plugin.AppletViewer.showAppletStatus(Unknown Source)
 						// at sun.applet.AppletPanel.run(Unknown Source)
 						// at java.lang.Thread.run(Unknown Source)
-				{		if(false)System.out.println(width+" x "+height+" pixels!!!!");
+				{		
+				if(paintPB&&(toomuch<30))
+					System.out.println(width+" x "+height+" pixels!!!!");
 				return;
 				}
 
 		  if(false) //Ende Mai : nur um BM zu überprüfen.
 			if((height<210)||(width<210))
 			throw new AssertionError(" Es ist zu klein! "+width+"  "+height+" pixels."); 
-		  if(true)
-			System.out.println(width+" x "+height+" pixels.");
+		  if(paintPB&&(toomuch<30))if(true)
+			System.out.println("setSize("+width+" x "+height+" pixels).");
 		  if(!scalePlot)
 			{
 			System.out.println("Nicht geändert!");
@@ -1720,27 +1758,28 @@ public class evolvePDE extends Applet implements Runnable {
           plotwidth=width;
           plotheight=height; 
     }
-  public void setSizeProgrammer(int width, int height) {    
+  public synchronized void setSizeProgrammer(int width, int height) {    
 		  setSize(width,height); 
           scalePlot=false;
     }
 
     // Next few methods are for interacting with GUI
-    public Dimension getMinimumSize() {
+    public synchronized Dimension getMinimumSize() {
     return new Dimension(200, 200);
   }
 
-    public Dimension getPreferredSize() {
+    public synchronized Dimension getPreferredSize() {
       return new Dimension(0600, 0600);//276);
      }
 
-    public Image getImage() {
+    public synchronized Image getImage() {
       return img;
     }
 
-    public void setImage(Image img) {
-      this.img = img;
-        paint(getGraphics());
+    public synchronized void setImage(Image img) {
+	if(paintPB&&(toomuch<30))if(true)System.out.println("setImage");
+     if(img!=null) this.img = img;
+     if(true)   update(getGraphics());
     }
 }
 
@@ -2355,7 +2394,8 @@ public class evolvePDE extends Applet implements Runnable {
         while(plotControls.runAnimation) {
 //            Don't seem to need next line 5/27/99
 //            canvas.setImage(null);            // Wipe previous image
-              Image img = calculateImage();
+              Image img=calculateImage();
+             // ???instead of the keywors "synchronize" on its methods synchronized(canvas) {
               synchronized(this) {
                   if (img != null && runner == Thread.currentThread())
                       canvas.setImage(img);

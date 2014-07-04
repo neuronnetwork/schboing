@@ -26,7 +26,8 @@ public class NN{
 	public topologischeBoltzmannmaschine[] BM;
 	public int Zahl_von_der_BM;
 	public topologischeBoltzmannmaschine EBM,MBM;
-	public Interface Schnittstelle;
+	public Interface Schnittstelle0;
+	public Interface2 Schnittstelle;
 	 
 	
 	public  NN(Pfeiler pf){
@@ -39,6 +40,7 @@ public class NN{
 			Reaktion =false;
 		else
 			Reaktion=true; 
+		uebereinstimmen = true;  
 		Haut=pf;
 		Haut.Unruhe(); 
 		
@@ -338,14 +340,14 @@ public class NN{
 			{ 
 			if(!(Zahl_von_der_BM>0))
 				return ;//throw new AssertionError("Es gibt keine Maschinen!");
-			for(int jj=0;jj<Zahl_von_der_BM;jj++) 
-				BM[jj].schuetteln(wie_viel);
 			for(int jj=0;jj<Zahl_von_der_BM;jj++)
 				{
 				Boltzmannmaschine M=BM[jj];
 				for(int a=0;a<M.Zahl_Von_Beziehungen;a++)
 					M.Beziehungen[a].Ruhe();
 				}
+			for(int jj=0;jj<Zahl_von_der_BM;jj++) 
+				BM[jj].schuetteln(wie_viel);
 			}
 	}
 	
@@ -437,10 +439,14 @@ public class NN{
 		BM=new topologischeBoltzmannmaschine[Zahl_von_der_BM]; 
 		int Reihen=20;
 		boolean waagerechte_Linie=true;
+		boolean genagelte_Linie=true;
+		double kleiner=1;//Es ist eine zu machende Sache
 		int ins_Rad=0;
 		boolean Rad=(ins_Rad!=0); 
 		for(int jj=0;jj<Zahl_von_der_BM;jj++)
-			BM[jj]=new topologischeBoltzmannmaschine((waagerechte_Linie?(Reihen-ins_Rad):0)+(Reihen-1),
+			BM[jj]=new topologischeBoltzmannmaschine((waagerechte_Linie?(Reihen-ins_Rad):0)+
+													  (Reihen-1)+
+													   (genagelte_Linie?(Reihen-1):0),
 														Reihen);
 		EBM=BM[0];
 		if(!nurEBM)  
@@ -457,15 +463,20 @@ public class NN{
 				{
 				if(waagerechte_Linie)
 					if((dieGruppe+ins_Rad<EBM.Reihe()))
-						Beziehungen[Nummer_von_Beziehung++]=new senkrechte_ausgerichtete_lange_Feder (0.00006,new Stelle[]{ 
+						Beziehungen[Nummer_von_Beziehung++]=new Lineal (0.03,new Stelle[]{ 
 							variables[i+0],variables[i+1],variables[i+2],variables[i+3]}	);
 				if(dieGruppe+1<EBM.Reihe())//nicht die Letzte
 					{
+						if(genagelte_Linie)
+					Beziehungen[Nummer_von_Beziehung++]=new genagelte_Feder(0.0000001,new Stelle[]{ 
+											variables[4+i+2],variables[4+i+3]},
+											dieGruppe*topologischeBoltzmannmaschine.Abstand_zw(),
+											(200-110+30)/kleiner);
 					if((dieGruppe+ins_Rad+1<EBM.Reihe())) 
-					Beziehungen[Nummer_von_Beziehung++]=new senkrechte_Feder(0.001,new Stelle[]{ 
-						variables[0+i+2],variables[0+i+3],variables[4+i+2],variables[4+i+3]}	);
+					Beziehungen[Nummer_von_Beziehung++]=new senkrechte_Feder(0.01,new Stelle[]{ 
+						variables[0+i+2],variables[0+i+3],variables[4+i+2],variables[4+i+3]}	); 
 					else 
-					Beziehungen[Nummer_von_Beziehung++]=new Feder(0.001,new Stelle[]{ 
+					Beziehungen[Nummer_von_Beziehung++]=new Quadratfeder(0.1,new Stelle[]{ 
 						variables[0+i+2],variables[0+i+3],variables[4+i+2],variables[4+i+3]}	);
 					}
 				}  
@@ -475,12 +486,13 @@ public class NN{
 			boolean choice=true;
 			Beziehung b1=null;
 			if(!choice)
-				b1=new ausgerichtete_Feder(0.002*0,new Stelle[]{EBM.variables[6],EBM.variables[7],MBM.variables[6],MBM.variables[7]});
-		 	Beziehung b2=new ausgerichtete_Feder(0.008,new Stelle[]{EBM.variables[2],EBM.variables[3],MBM.variables[2],MBM.variables[3]});
+				b1=new ausgerichtete_Feder(0.02,new Stelle[]{EBM.variables[6],EBM.variables[7],MBM.variables[6],MBM.variables[7]});
+		 	Beziehung b2=new ausgerichtete_Feder(0.8,new Stelle[]{EBM.variables[2],EBM.variables[3],MBM.variables[2],MBM.variables[3]});
 			if(choice )
-				Schnittstelle= new Interface(EBM,MBM,1,new Beziehung[]{ b2 });
+				Schnittstelle0=new Interface(EBM,MBM,1,new Beziehung[]{ b2 });
 			else
-				Schnittstelle= new Interface(EBM,MBM,2,new Beziehung[]{ b1,b2});		
+				Schnittstelle0=new Interface(EBM,MBM,2,new Beziehung[]{ b1,b2});	 
+			Schnittstelle=new Interface2(BM,Zahl_von_der_BM,Interface2.Links); 
 			} 
 		kleinen_Fehler(1); 
 		}
@@ -664,11 +676,12 @@ public class NN{
 } 
 	private void druecken(){
 	if(!Entspannung)
-		return;
-	if( nurEBM   ||(Schnittstelle==null))
-		Interface.druecken(BM,Zahl_von_der_BM);  
-	else 
-		Interface.druecken(Schnittstelle,BM,Zahl_von_der_BM); 
+		return;   
+if(false)//laufend4784864684864684684684687
+	Interface2.druecken(Schnittstelle); 
+else  
+	Interface.druecken(Schnittstelle0); 
+
 	}
 	
 	public boolean Ja_oder_Nein(short x,short y,short z){
@@ -782,7 +795,7 @@ class Variable_mit_Zwischenspeicher extends Variable{
 
 class Stelle extends Variable_mit_Zwischenspeicher{ 
 	public 	double v;
-	private double a;
+	public  double a;
 	
 	public double gibt_a(){
 		return 	gibt_a(true);
@@ -914,32 +927,85 @@ public Feder(double dieSteifheit,Stelle[] array){
 	} 
 public void Ruhe()
 	{
-	variables[2].Kommazahl=variables[0].Kommazahl-Länge*Math.cos(-0.1); 
-	variables[3].Kommazahl=variables[1].Kommazahl-Länge*Math.sin(-0.1); 
+	variables[2].Kommazahl=variables[0].Kommazahl+Länge*Math.cos(+0.3); 
+	variables[3].Kommazahl=variables[1].Kommazahl+Länge*Math.sin(+0.3); 
 	}
 public void druecken(boolean Galileo)
 	{  
-	double xSpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
-						variables[1].Kommazahl-variables[3].Kommazahl); 
 	double ySpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
+						variables[1].Kommazahl-variables[3].Kommazahl); 
+	double xSpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
 						variables[0].Kommazahl-variables[2].Kommazahl);  
-	double Spannung=sqrt(xSpannung*xSpannung+ySpannung*ySpannung);
-	xSpannung/=Spannung;
+	double Spannung=sqrt(ySpannung*ySpannung+xSpannung*xSpannung);
+	if(Spannung==0)
+		return; 
 	ySpannung/=Spannung;
+	xSpannung/=Spannung;
 	Spannung=Spannung-Länge;
 	Spannung*=Spannung;
-	xSpannung*=Spannung;
 	ySpannung*=Spannung;
+	xSpannung*=Spannung;
 	
 	double change=100* 
-		 (xSpannung)*Steifheit; 
-	variables[3].hinzufuegt(+change,Galileo); 
-	variables[1].hinzufuegt(-change,Galileo); 
-		 
+		 (ySpannung)*Steifheit; 
+	variables[3].hinzufuegt(+change,Galileo);  
+	if(true){//if(die Feder nicht ausgerichtet sein muß)  
+		variables[1].hinzufuegt(-change,Galileo); 
+		}
+		
 	change=100* 
-		 (ySpannung)*Steifheit;  
-	variables[2].hinzufuegt(+change,Galileo); 
-	variables[0].hinzufuegt(-change,Galileo); 
+		 (xSpannung)*Steifheit;  
+	variables[2].hinzufuegt(+change,Galileo);
+	if(true){//if(die Feder nicht ausgerichtet sein muß) 
+		variables[0].hinzufuegt(-change,Galileo);  
+		}
+	} 	
+	
+}
+
+
+
+
+
+class Quadratfeder extends kuerze_Feder{//V=(x²-y²-10)²
+	double Länge;
+	 
+public Quadratfeder(double dieSteifheit,Stelle[] array){
+	super(dieSteifheit,array);
+	Länge=5;
+	Ruhe();
+	} 
+public void Ruhe()
+	{
+	variables[2].Kommazahl=variables[0].Kommazahl+Länge*Math.cos(+0.3); 
+	variables[3].Kommazahl=variables[1].Kommazahl+Länge*Math.sin(+0.3); 
+	}
+public void druecken(boolean Galileo)
+	{  
+	double EntfernungX=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
+						variables[0].Kommazahl-variables[2].Kommazahl);  
+	double EntfernungY=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
+						variables[1].Kommazahl-variables[3].Kommazahl); 
+	double Spannung=(EntfernungY*EntfernungY+EntfernungX*EntfernungX); 
+	double RichtungX,RichtungY;
+	{
+		double s=sqrt(Spannung);
+		RichtungX=EntfernungX/s;
+		RichtungY=EntfernungY/s; 
+	}
+	Spannung=Spannung-Länge*Länge;
+	
+	double change=//Steifheit*
+	     0.001*Spannung; 
+	EntfernungX*=change; 
+	EntfernungY*=change; 
+	
+	variables[2].hinzufuegt(+EntfernungX,Galileo);  
+	variables[3].hinzufuegt(+EntfernungY,Galileo); 
+	if(true){//if(die Feder nicht ausgerichtet sein muß) //DANN SIND SIE ZU WEIT WEG!
+		variables[0].hinzufuegt(-EntfernungX,Galileo); 
+		variables[1].hinzufuegt(-EntfernungY,Galileo); 
+		}
 	} 	
 	
 }
@@ -955,32 +1021,29 @@ public senkrechte_ausgerichtete_lange_Feder(double dieSteifheit,Stelle[] array){
 	super(array);
 	Steifheit=dieSteifheit;
 	}
+protected double Spannung(){
+	//double kleiner=256/Breite();   //Verbesserung184684 :  110/kleiner   
+	return variables[1].Kommazahl-variables[3].Kommazahl -110; 
+	}
 public void druecken(boolean Galileo)
-	{ 
-	double Spannung=variables[1].Kommazahl-variables[3].Kommazahl -110; 
+	{  
 	double change=100*
-		 (Spannung)*Steifheit;   
-	variables[3].hinzufuegt( change,Galileo);  
+		 (Spannung())*Steifheit;   
+	variables[3].hinzufuegt(change,Galileo);  
 	}
 	 
 }
-
-class senkrechte_ausgerichtete_Feder extends zweipunktigeBeziehung{
-	double Steifheit;
-	
-public senkrechte_ausgerichtete_Feder(Stelle[] array){
-	this(0.01,array); 
-	}
-public senkrechte_ausgerichtete_Feder(double dieSteifheit,Stelle[] array){
-	super(array);
-	Steifheit=dieSteifheit;
+ 
+class Lineal extends senkrechte_ausgerichtete_lange_Feder{ 
+	 
+public Lineal(double dieSteifheit_hoch_Null_komma_3,Stelle[] array){
+	super(dieSteifheit_hoch_Null_komma_3*dieSteifheit_hoch_Null_komma_3*dieSteifheit_hoch_Null_komma_3
+			,array); 
 	}
 public void druecken(boolean Galileo)
 	{ 
-	double Spannung=variables[1].Kommazahl-variables[3].Kommazahl; 
-	double change=100*
-		 (Spannung)*Steifheit;   
-	variables[3].hinzufuegt( change,Galileo);  
+	double Spannung=variables[1].Kommazahl-variables[3].Kommazahl;   
+	variables[3].hinzufuegt(Steifheit*Math.pow(Spannung(),3),Galileo);  
 	}
 	 
 }
@@ -997,7 +1060,8 @@ public senkrechte_Feder(double dieSteifheit,Stelle[] array){
 	}
 public void druecken(boolean Galileo)
 	{ 
-	double Spannung=variables[1].Kommazahl-variables[3].Kommazahl; 
+	double Spannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
+						variables[1].Kommazahl-variables[3].Kommazahl); 
 	double change=100*
 		 (Spannung)*Steifheit;   
 	variables[3].hinzufuegt(+change,Galileo);  
@@ -1092,6 +1156,57 @@ static double FederDruckKraft4545(double x)
 
 }
  
+
+class genagelte_Feder extends Beziehung{ 
+		double Länge;
+		double ZentrumX,ZentrumY;
+		public double Steifheit;
+	 
+public genagelte_Feder(double Steifheit,Stelle[] array,double x,double y){
+	super(2,array); 
+	this.Steifheit=Steifheit;
+	ZentrumX=x;
+	ZentrumY=y;
+	Länge=10;
+	Ruhe();
+	} 
+public void Ruhe()
+	{
+		if(true){
+	variables[0].Kommazahl=ZentrumX; 
+	variables[1].Kommazahl=ZentrumY+Länge; 
+		}
+	variables[0].v=0;
+	variables[1].v=0;
+	variables[0].a=0;
+	variables[1].a=0;
+	}
+public void druecken(boolean Galileo)
+	{  
+	double ySpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
+						variables[1].Kommazahl-ZentrumY); 
+	double xSpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
+						variables[0].Kommazahl-ZentrumX);  
+	double Spannung=sqrt(xSpannung*xSpannung+ySpannung*ySpannung);
+	xSpannung/=Spannung;
+	ySpannung/=Spannung;
+	Spannung=Spannung-Länge;
+	Spannung*=Spannung;
+	xSpannung*=Spannung;
+	ySpannung*=Spannung;
+	
+	double change=100* 
+		 (ySpannung)*Steifheit;  
+	variables[1].hinzufuegt(-change,Galileo); 
+		 
+	change=100* 
+		 (xSpannung)*Steifheit;   
+	variables[0].hinzufuegt(-change,Galileo); 
+	} 	
+	
+}
+
+
 class Interface extends BoltzmannmaschineOderInterface 
 {
 	Boltzmannmaschine EBM,MBM;
@@ -1146,14 +1261,10 @@ class Interface extends BoltzmannmaschineOderInterface
 		Maschine[1]=Schnittstelle.MBM;
 		druecken(Schnittstelle,Maschine,2);
 		}
-	public static void druecken(Boltzmannmaschine[] alleMaschinen,int Zahl_von_der_BM)
-		{
-		druecken_(null,alleMaschinen,Zahl_von_der_BM);
-		}
 	public static void druecken(Interface Schnittstelle,Boltzmannmaschine[] alleMaschinen,int Zahl_von_der_BM)
 		{
 		druecken_(Schnittstelle,alleMaschinen,Zahl_von_der_BM);
-		}
+		} 
 	private static void druecken_(Interface Schnittstelle,Boltzmannmaschine[] alleMaschinen,int Zahl_von_der_BM)
 		{   
 		if(Schnittstelle!=null) 
@@ -1177,22 +1288,35 @@ class Interface extends BoltzmannmaschineOderInterface
 				{
 				Maschine[bm].variables[i].setzt_a_fest(0); 
 				Maschine[bm].variables[i].setzt_a_fest(0,false); 
-				} 
-						
-		if(Schnittstelle!=null) 
+				}   
 			if(NN.uebereinstimmen)
-			  Schnittstelle.druecken();   
+				if(!( nurEBM ))
+					Schnittstelle.druecken();   
+		boolean zusammen=true;
+			if(!zusammen){
+				Maschine[0].druecken(NN.Galileo);
+		for(int bm=1;bm<Zahl_von_der_BM;bm++)
+			for(int u=0;u<4;u++)
+				{
+				Maschine[bm].variables[u].setzt_a_fest( Maschine[0].variables[u].gibt_a());  
+				Maschine[bm].variables[u].v= 		     Maschine[0].variables[u].v;  
+				Maschine[bm].variables[u].Kommazahl=    Maschine[0].variables[u].Kommazahl;  
+				} 
+		for(int bm=1;bm<Zahl_von_der_BM;bm++)
+			Maschine[bm].druecken(NN.Galileo);
+			}
+else	
 		for(int bm=0;bm<Zahl_von_der_BM;bm++)
 			Maschine[bm].druecken(NN.Galileo);
-			
+				
 		
 		for(int bm=0;bm<Zahl_von_der_BM;bm++)
 				{ 
 				boolean nach_Galileo=true;
-				if(true)//if( (NN.Galileo&&!(Schnittstelle.ist_eine_meiner_Var(vari)   
+				if(true)//if( (NN.Galileo&&!(Schnittstelle0.ist_eine_meiner_Var(vari)   
 					//												)))
 					Maschine[bm].setzt_neue_Stelle(nach_Galileo,Schnittstelle,bm==1);				 
-				} 	
+				} 	 
 		}
 }
 
@@ -1203,7 +1327,7 @@ abstract class BoltzmannmaschineOderInterface
 	
 	public BoltzmannmaschineOderInterface(int Zahl_Von_Beziehungen)
 	{
-	Beziehungen=new Beziehung[this.Zahl_Von_Beziehungen=Zahl_Von_Beziehungen]; 
+	Beziehungen=new Beziehung[this.Zahl_Von_Beziehungen=Zahl_Von_Beziehungen];  
 	}
 	
 	public BoltzmannmaschineOderInterface(int Zahl_Von_Beziehungen,Beziehung[] Beziehungen)
@@ -1241,7 +1365,15 @@ class Boltzmannmaschine extends BoltzmannmaschineOderInterface
 		super(Zahl_Von_Beziehungen);
 		this.variables=variables;
 		}
-	public void setzt_neue_Stelle(boolean Galileo,Interface Schnittstelle,boolean ist_MBM)
+	public void setzt_neue_Stelle(){
+		for(int i=0;i<number_of_variables;i++)
+			{
+			Stelle vari=variables[i];
+			vari.v+=Zellnetz.get_dt()*vari.gibt_a();  //die Geschwindigkeiten rechnen
+			vari.Kommazahl+=Zellnetz.get_dt()*vari.v; 			//die Stellen rechnen
+			} 		 
+	}
+	public void setzt_neue_Stelle(boolean Galileo,Interface Schnittstelle0,boolean ist_MBM)
 		{
 		for(int i=0;i<number_of_variables;i++)
 			{
@@ -1250,16 +1382,16 @@ class Boltzmannmaschine extends BoltzmannmaschineOderInterface
 			vari.Kommazahl+=Zellnetz.get_dt()*vari.v; 			//die Stellen rechnen
 			
 			boolean nach_Galileo=NN.Galileo;
-			 if(!NN.Galileo||(Schnittstelle.ist_eine_meiner_Var(vari)&&ist_MBM  
+			 if(!NN.Galileo||(Schnittstelle0.ist_eine_meiner_Var(vari)&&ist_MBM  
 																))
 			{
 				nach_Galileo=				nach_Galileo ;
 			}
-			if(true)//if(!NN.Galileo)//if(!NN.Galileo||(Schnittstelle.ist_eine_meiner_Var(vari)&&bm==1 //d.h. MBM
+			if(true)//if(!NN.Galileo)//if(!NN.Galileo||(Schnittstelle0.ist_eine_meiner_Var(vari)&&bm==1 //d.h. MBM
 							//										))
 				{ 
 				double Speicher=0.5*Zellnetz.get_dt()*Zellnetz.get_dt()*vari.gibt_a(false);
-				if(Schnittstelle.ist_eine_meiner_Var(vari))
+				if(Schnittstelle0.ist_eine_meiner_Var(vari))
 				;;;;
 				vari.Kommazahl+=
 						Speicher;   
@@ -1272,7 +1404,8 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 { 
 	private int Reihe,Gruppe,Dimension;
 	private double Spalt,Leerstelle;
-	public boolean Torus;  
+	public static boolean Torus;   
+	private static double Abklingkonstantekopie;
 	public topologischeBoltzmannmaschine(int Beziehungen,int Reihe)
 	{
 		this(Beziehungen,Reihe,2/*Spalt*/,80/*Leerstelle*/,2/*Gruppe*/,2/*Dimension*/); 
@@ -1288,8 +1421,11 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 		this.Torus=true; 
 		if(Beispiel==null)
 			Beispiel=this;
+		Abklingkonstantekopie=-1;
 	}
 	public double Breite(){
+		if(vernicht_mich_455465465465) if(Sache()*Reihe()+Spalt()*(Reihe()-1)+Leerstelle<=0)
+				throw new AssertionError();
 		return Sache()*Reihe()+Spalt()*(Reihe()-1)+Leerstelle;
 	}
 	public double dieser_Spalt(){
@@ -1301,17 +1437,31 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 	public double Abstand_zwischen_Kernen(){
 		return Spalt()+Sache();
 	}
+	public static double Abstand_zw(){
+		return Beispiel().Abstand_zwischen_Kernen();
+	}
 	public double Reihe(){
 		return Reihe;
 	}
 	public static int Sache(){
 		return 7;
 	}
-	public void setzt_neue_Stelle(boolean Galileo,Interface Schnittstelle,boolean ist_MBM)
+	public int Dimension(){
+		return Dimension;
+	}
+	public int Speicherabstand(){
+		return Gruppe*Dimension();
+	}
+	public void setzt_neue_Stelle(boolean Galileo,Interface Schnittstelle0,boolean ist_MBM)
 		{
-		super.setzt_neue_Stelle(Galileo,Schnittstelle,ist_MBM);
+		super.setzt_neue_Stelle(Galileo,Schnittstelle0,ist_MBM);
 		grenzen();
-		}
+		}	
+	public void setzt_neue_Stelle(){
+		
+		super.setzt_neue_Stelle( ); 
+		grenzen();			 
+	}
 		 
 	public void grenzen()
 		{ 
@@ -1349,24 +1499,66 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 			throw new AssertionError("topologischeBoltzmannmaschine.Beispiel->java.lang.NullPointerException");
 		return Beispiel;
 	}
-	private double ausgerichtete_Entfernung_0(double E)
+	private double ausgerichtete_Entfernung_0(double E)//bitte verändert auch abklingen(double x,double y) 
 	{
 		if(!Torus) 
 			return E;
 		double B;
 		if( 2*E>(B=Breite()))
-			return Breite()-E;  
-		if(-2*E>Breite())
-			return Breite()+E;  
-		// nem (| b - a | > E/2)
-		if(!Torus) throw new AssertionError("Implementieren die Entfernung für Nichtori!");
+			return E-B;  
+		if(-2*E>B)
+			return E+B;  
+		// nem (| b - a | > E/2) 
 		return E;
+	} 
+	public static void setzt_sie_fest(double Abklingkonstante){
+		if(!(Abklingkonstantekopie==-1))
+			throw new AssertionError("Sie wurde von Interface2() schon angerufen!");
+		Abklingkonstantekopie=Abklingkonstante; 
+	}
+	public static double abklingen(double x,double y)
+	{	
+		if(true)
+			if(Beispiel().Abklingkonstantekopie==-1)
+				throw new AssertionError("topologischeBoltzmannmaschine.Beispiel->Abklingkonstantekopie wurde nicht initialisiert ");
+		return Beispiel().abklingen_versteckte(x,y); 
+	}   
+	private static double abklingen_versteckte(double x,double y)//ergibt schneller x+Abklingkonstantekopie*Beispiel().ausgerichtete_Entfernung_0(y-x)
+	{
+		double E=y-x;
+		if(!Torus) 
+			return x+E*Abklingkonstantekopie;
+		double B;
+		if( 2*E>(B=Beispiel.Breite())){
+			double Ergebnis= x+(E-B)*Abklingkonstantekopie;  
+			if(Ergebnis<0)
+				Ergebnis+=B;
+			return Ergebnis;
+		}
+		if(-2*E>B){
+			double Ergebnis= x+(E+B)*Abklingkonstantekopie; 
+			if(Ergebnis>B)
+				Ergebnis-=B;
+			return Ergebnis;
+		} 
+		// nem (| b - a | > E/2) 
+		return x+E*Abklingkonstantekopie;
 	}
 		
+	public static final boolean   die_Grenzen_verbessern = false; //vernicht_mich_871767116977
 	public void schuetteln(double wie_viel)
 		{ 
+		if(!die_Grenzen_verbessern)
+		{
 		if(wie_viel==1) 
 			{ 
+			for(int i=0;i<number_of_variables;i++) 
+				{
+				variables[i].setzt_a_fest(0); 
+				if(!NN.Galileo)
+					variables[i].setzt_a_fest(0,false); 
+				variables[i].v=0; 
+				}
 			double kleiner=256/Breite();
 			int z;
 			int in_der_Reihe;
@@ -1375,12 +1567,37 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 				variables[z]  .Kommazahl=in_der_Reihe*Abstand_zwischen_Kernen();
 				variables[z+1].Kommazahl=200/kleiner;
 				variables[z+2].Kommazahl=in_der_Reihe*Abstand_zwischen_Kernen();
-				variables[z+3].Kommazahl=(200-110)/kleiner;
-				if(in_der_Reihe==0) 
-					variables[z+3].Kommazahl+=(Math.random()*2-1)*20/kleiner;   
-				if((in_der_Reihe>2.*Reihe/5)&&(in_der_Reihe<3.*Reihe/5))
-					variables[z+3].Kommazahl+=Math.random()*109/kleiner;   
+				variables[z+3].Kommazahl=(200-110)/kleiner;  
+				if(false) //Es gäbe keinen Schwung am Amfang
+					{
+					if(in_der_Reihe==0) 
+						variables[z+3].Kommazahl+=(Math.random()*2-1)*20/kleiner; 
+					if((in_der_Reihe>2.*Reihe/5)&&(in_der_Reihe<3.*Reihe/5))
+						variables[z+3].Kommazahl+=Math.random()*109/kleiner;   
+					}
+				else  {
+					if((in_der_Reihe==0))
+						variables[z+3].v=(Math.random()*2-1)*5/kleiner; 
+					if(false)
+						if( (in_der_Reihe==Reihe-1))
+							variables[z+3].v=(Math.random()*2-1)*1/kleiner; 
+					if((in_der_Reihe>2.*Reihe/5)&&(in_der_Reihe<3.*Reihe/5))
+						variables[z+3].v+=Math.random()*20/kleiner;   
+					}
 				} 
+			} 
+			for(int z=0 ;z<number_of_variables;z+=Dimension ){//vernicht_mich_684684544215
+				int x=(int)variables[z]    .Kommazahl;
+				int y=(int)variables[z+1]  .Kommazahl; 
+				if((x<0)||(!(x<Breite()))||(y<0)||(!(y<Breite())))
+					        throw new AssertionError("u   "+x+" "+y+" "+"x<0 oder ...");
+			}
+		}
+		else
+		if(die_Grenzen_verbessern)
+		{
+		if(wie_viel==1) 
+			{ 
 			for(int i=0;i<number_of_variables;i++) 
 				{
 				variables[i].setzt_a_fest(0); 
@@ -1388,18 +1605,259 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 					variables[i].setzt_a_fest(0,false); 
 				variables[i].v=0; 
 				}
-			}
-			if(false)//Beschleunigung am Amfang
+			double kleiner=256/Breite();
+			int z;
+			int in_der_Reihe;
+			for(z=0,in_der_Reihe=0;z<number_of_variables;z+=Gruppe*Dimension,in_der_Reihe++)
 				{
-				variables[2].v=1; 
-				variables[3].v=3; 
+				variables[z]  .Kommazahl=in_der_Reihe*Abstand_zwischen_Kernen();
+				variables[z+1].Kommazahl=200/kleiner;
+				variables[z+2].Kommazahl=in_der_Reihe*Abstand_zwischen_Kernen();
+				variables[z+3].Kommazahl=(200-110)/kleiner;  
+				  
+				} 
+			}
+			if(true)//Beschleunigung am Amfang
+				{
+				variables[2].v=0; 
+				variables[3].v=Math.random()*+50; 
 				}
-			for(int z=0 ;z<number_of_variables;z+=Dimension ){
+			for(int z=0 ;z<number_of_variables;z+=Dimension ){//vernicht_mich_684684544215
 				int x=(int)variables[z]    .Kommazahl;
 				int y=(int)variables[z+1]  .Kommazahl; 
 				if((x<0)||(!(x<Breite()))||(y<0)||(!(y<Breite())))
 					        throw new AssertionError("u   "+x+" "+y+" "+"x<0 oder ...");
 			}
-		}
-	
+		} 
+	}
+
 }
+
+
+
+class Interface2 extends BoltzmannmaschineOderInterface{
+	Menge Mengen[];
+	int Zahl_von_der_Mengen;
+	topologischeBoltzmannmaschine[] BM;
+	int Zahl_von_der_BM;
+	double Abklingkonstante;
+		
+	private class Menge extends Stelle{
+		Stelle[] Beruehrten;
+		double[] wie_viel; 
+		public Menge(){
+			if(!(Zahl_von_der_Mengen<20))
+				throw new AssertionError("Kein Problem.");
+			Beruehrten  =new Stelle[Zahl_von_der_BM];
+			wie_viel	=new double  [Zahl_von_der_BM];
+			Mengen[Zahl_von_der_Mengen++]=this;	
+		}
+		public void beruehrt(topologischeBoltzmannmaschine Maschine,int wo,double wie_viel){
+			beruehrt(Maschine,Maschine.variables[wo],wie_viel); 
+		}
+		public void beruehrt(topologischeBoltzmannmaschine Maschine,Stelle wo,double wie_viel){
+			int BMnummer=0;
+			while(BM[BMnummer]!=Maschine){
+				BMnummer++;
+				if(ENTWICKLUNG_MODUS)
+					if(BMnummer==Zahl_von_der_BM)
+						throw new AssertionError();
+			}
+			   Beruehrten   [BMnummer]=wo;
+			this.wie_viel  [BMnummer]=wie_viel;
+		}
+		public boolean richtige_Gewichte(){
+			double Gewicht=0;
+			for(int i=0;i<Zahl_von_der_BM;i++)
+				Gewicht+=wie_viel[i];
+			if(Gewicht==1)
+				return true;
+			return false;
+		}
+		public Stelle der_Durchschnitt(){
+			return (Stelle)this;
+		}
+	}
+	public boolean richtige_Gewichte(){
+		boolean aua=false;
+		for(int b=0;b<Zahl_von_der_Mengen;b++){
+			if(!Mengen[b].richtige_Gewichte())
+				aua=true;
+		}
+		if(!aua)
+			return true;
+		if(!ENTWICKLUNG_MODUS)
+			throw new AssertionError("Es gibt einen Fehler von dem Programmierer.");
+		System.out.println("Keine richtige_Gewichte:"); 
+		for(int b=0;b<Zahl_von_der_Mengen;b++) {
+				double Gesamtgewicht=0;
+				for(int i=0;i<Zahl_von_der_BM;i++)
+					Gesamtgewicht+=Mengen[b].wie_viel[i];
+				if(Gesamtgewicht!=1){
+				System.out.print ("Menge "+b); 
+					System.out.println( ": Gesamtgewicht="+Gesamtgewicht ); 
+				}
+			}
+			;// schreib´ da!
+		return false;
+	}
+	
+	private Interface2(topologischeBoltzmannmaschine[] BM,int Zahl_von_der_BM){//private for Nagel. Kein Problem.
+		super(0);
+		this.BM=new topologischeBoltzmannmaschine[this.Zahl_von_der_BM=Zahl_von_der_BM];
+		for(int i=0;i<Zahl_von_der_BM;i++)
+			this.BM[i]=BM[i];
+		Mengen=new Menge[20]; 
+		Zahl_von_der_Mengen=0;
+		Abklingkonstante=0.9;
+		topologischeBoltzmannmaschine.setzt_sie_fest(Abklingkonstante);
+	} 
+	private Interface2(){//private for Nagel. Kein Problem.
+		this(new topologischeBoltzmannmaschine[] {},0); 
+	}
+	public Interface2(topologischeBoltzmannmaschine[] BM,int Zahl_von_der_BM,int Nagel){
+		this(BM,Zahl_von_der_BM);
+		naehen(Nagel);
+	}
+	public void add(topologischeBoltzmannmaschine bm){//bitte "private"
+		if(Zahl_von_der_Mengen!=0)
+			throw new AssertionError("\"add\" jetzt!?");//System.out.println("\"add\" jetzt!?");
+		BM[Zahl_von_der_BM++]=bm;
+		}
+	public static final int Links=0;
+	public static final int Halbe_Halbe=101;
+	public static final int Fuers_Rad=100;
+	public void naehen(int Gestalt){
+		switch(Gestalt){
+			case Links:{
+				if(Zahl_von_der_BM<2)
+					throw new AssertionError();
+				Menge Mx=new Menge();
+				Menge My=new Menge();
+				Mx.beruehrt(BM[0],2,1);
+				Mx.beruehrt(BM[1],2,0);
+				My.beruehrt(BM[0],3,1);
+				My.beruehrt(BM[1],3,0); 
+			break;
+			}
+			case Halbe_Halbe:{//halbe-halbe  //FUNKTIONNIERT NICHT
+				if(Zahl_von_der_BM<2)
+					throw new AssertionError();
+				Menge Mx=new Menge();
+				Menge My=new Menge();
+				Mx.beruehrt(BM[0],2,0.5);
+				Mx.beruehrt(BM[1],2,0.5);
+				My.beruehrt(BM[0],3,0.5);
+				My.beruehrt(BM[1],3,0.5);  
+			break;
+			}
+			case Fuers_Rad:{
+				if(Zahl_von_der_BM<2)
+					throw new AssertionError();
+				if(BM[0].Reihe()<20)
+					throw new AssertionError();
+				Menge Mx=new Menge();
+				Menge My=new Menge();
+				int Sa=BM[0].Speicherabstand();
+				int last=19*Sa+BM[0].Dimension();
+				Mx.beruehrt(BM[0],last+0,1);
+				Mx.beruehrt(BM[1],last+0,0);
+				My.beruehrt(BM[0],last+1,1);
+				My.beruehrt(BM[1],last+1,0); 
+				Menge M3=new Menge();
+				M3.beruehrt(BM[0],last-Sa,1);
+				M3.beruehrt(BM[1],last-Sa,0); 
+				Menge M4=new Menge();
+				M4.beruehrt(BM[0],last-Sa+1,1);
+				M4.beruehrt(BM[1],last-Sa+1,0);  
+			break;
+			}
+			default:
+				throw new AssertionError("Eine solche Gestalt gibt´s nicht.");
+		}
+		if(!richtige_Gewichte())
+			throw new AssertionError();
+	}
+	public void erzwingt(){
+		if(ENTWICKLUNG_MODUS){
+			if(Zahl_von_der_BM<1) 
+				throw new AssertionError("Es gibt keine Maschinen!");
+			if(Zahl_von_der_Mengen==0)
+						throw new AssertionError("Ich zweifle.");
+			if(!richtige_Gewichte()) 
+				throw new AssertionError("Manchmal sind die Gewichte falsch.");
+		}
+		
+		{//druecken
+			for(int bm=0;bm<Zahl_von_der_BM;bm++)
+				for(int i=0;i<BM[bm].number_of_variables;i++) 
+					BM[bm].variables[i].a=0;   
+			for(int bm=0;bm<Zahl_von_der_BM;bm++)
+				BM[bm].druecken(true); 
+		}
+		if(NN.uebereinstimmen&&!nurEBM ){
+			for(int Mn=0;Mn<Zahl_von_der_Mengen;Mn++){//das Rechnen der Durchschnitte 
+				Menge dieMenge=Mengen[Mn];
+				Stelle der_Durchschnitt=dieMenge.der_Durchschnitt(); 
+				der_Durchschnitt.Kommazahl=0; 
+				der_Durchschnitt.v=0; 
+				der_Durchschnitt.a=0;  
+				for(int bm=0;bm<Zahl_von_der_BM;bm++){
+					double wie_viel=dieMenge.wie_viel[bm]; 
+					der_Durchschnitt.Kommazahl+=dieMenge.Beruehrten[bm].Kommazahl*wie_viel; 
+					der_Durchschnitt.v+=		dieMenge.Beruehrten[bm].v*wie_viel; 
+					der_Durchschnitt.a+=		dieMenge.Beruehrten[bm].a*wie_viel; 
+				}			
+			}//http://de.wikipedia.org/wiki/Aperiodischer_Grenzfall
+			for(int Mn=0;Mn<Zahl_von_der_Mengen;Mn++){//ihres Erzwingen 
+				Menge dieMenge=Mengen[Mn];
+				Stelle der_Durchschnitt=dieMenge.der_Durchschnitt(); 
+				for(int bm=0;bm<Zahl_von_der_BM;bm++){
+						//double wie_viel=dieMenge.wie_viel[bm]; 
+						Stelle B=dieMenge.Beruehrten[bm];  
+						B.Kommazahl= 
+						      topologischeBoltzmannmaschine.abklingen
+							(B.Kommazahl,der_Durchschnitt.Kommazahl);  
+							
+						B.v+=		 Abklingkonstante*	
+							(der_Durchschnitt.v-B.v);
+						B.a+=		 Abklingkonstante*	
+							(der_Durchschnitt.a-B.a); 
+					}
+			} 
+		}
+		for(int bm=0;bm<Zahl_von_der_BM;bm++)//drueckt
+				{ 
+				BM[bm].setzt_neue_Stelle();	
+				} 	 			 			
+	}
+	public static void druecken(Interface2 Schnittstelle)
+		{  
+		druecken(Schnittstelle,Schnittstelle.BM,Schnittstelle.Zahl_von_der_BM);
+		} 
+	public static void druecken(Interface2 Schnittstelle,Boltzmannmaschine[] alleMaschinen,int Zahl_von_der_BM)
+		{
+		druecken_(Schnittstelle,alleMaschinen,Zahl_von_der_BM);
+		} 
+	private static void druecken_(Interface2 Schnittstelle,Boltzmannmaschine[] alleMaschinen,int Zahl_von_der_BM)
+		{   
+		
+			{
+			if(Zahl_von_der_BM<2)
+				throw new AssertionError("Scheiße!: Zahl_von_der_BM ist kleiner als 2...");
+			if((alleMaschinen==null) )
+				throw new AssertionError("Scheiße!");  
+			} 
+		Schnittstelle.erzwingt();   					 
+		}
+	public void setzt_sie_fest(double Abklingkonstante){
+		if(!(this.Abklingkonstante==1))
+			throw new AssertionError("Es gibt einen Fehler von dem Programmierer.");
+		this.Abklingkonstante=Abklingkonstante; 
+	}
+	public topologischeBoltzmannmaschine eine_Maschine(){
+		if(Zahl_von_der_BM<1)
+			throw new AssertionError("Es gibt einen Fehler von dem Programmierer.");
+		return BM[0];		
+	}
+} 
