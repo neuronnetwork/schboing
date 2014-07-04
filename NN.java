@@ -460,7 +460,7 @@ public class NN{
 			 MBM=EBM;  
 		Pottsnagel.Anfang();
 		for(int bm=0;bm<(nurEBM?1:2);bm++)
-			{
+			{ 
 			Pottsnagel Potts1=new Pottsnagel(); 
 			Pottsnagel Potts2=new Pottsnagel();  
 			int Nummer_von_Beziehung,dieGruppe;
@@ -476,7 +476,52 @@ public class NN{
 				if(dieGruppe+1<EBM.Reihe())//nicht die Letzte
 					{
 						if(genagelte_Linie)
-						{
+						{ 
+/*bm=0
+ * Wir sind 1
+Wir sind 2
+Zahl_von_Federn 0
+Zahl_von_Federn 1
+Zahl_von_Federn 2
+Zahl_von_Federn 3
+Zahl_von_Federn 4
+Zahl_von_Federn 5
+Zahl_von_Federn 6
+Zahl_von_Federn 7
+Zahl_von_Federn 8
+Zahl_von_Federn 9
+Zahl_von_Federn 10
+Zahl_von_Federn 11
+Zahl_von_Federn 12
+Zahl_von_Federn 13
+Zahl_von_Federn 14
+Zahl_von_Federn 15
+Zahl_von_Federn 16
+Zahl_von_Federn 17
+Zahl_von_Federn 18
+bm=1
+potts:               Wir sind 3
+Wir sind 4
+Zahl_von_Federn 0
+Zahl_von_Federn 1
+Zahl_von_Federn 2
+Zahl_von_Federn 3
+Zahl_von_Federn 4
+Zahl_von_Federn 5
+Zahl_von_Federn 6
+Zahl_von_Federn 7
+Zahl_von_Federn 8
+Zahl_von_Federn 9
+Zahl_von_Federn 10
+Zahl_von_Federn 11
+Zahl_von_Federn 12
+Zahl_von_Federn 13
+Zahl_von_Federn 14
+Zahl_von_Federn 15
+Zahl_von_Federn 16
+Zahl_von_Federn 17
+Zahl_von_Federn 18
+*/
 							Beziehungen[Nummer_von_Beziehung++]=Potts1.hinzufuegen(new genagelte_Feder(3,new Stelle[]{ 
 													variables[4+i+2],variables[4+i+3]},
 													dieGruppe*topologischeBoltzmannmaschine.Abstand_zw(),
@@ -1310,13 +1355,13 @@ class Pottsnagel{
 		if(wir_sind==40)
 			throw new AssertionError();
 		uns[wir_sind++]=this; 
-		System.out.println("Wir sind "+wir_sind); 
+		if(false)System.out.println("Wir sind "+wir_sind); 
 		System.out.flush(); 
 		}
 	public genagelte_Feder hinzufuegen(genagelte_Feder F)
 		{
 		F.mein_Pottsnagel(this);
-		System.out.println("Zahl_von_Federn "+Zahl_von_Federn );
+		if(false)System.out.println("Zahl_von_Federn "+Zahl_von_Federn );
 		if(Zahl_von_Federn+1>MAX)
 			System.out.println("Bitte: sei Pottsnagel.MAX nicht < "+Zahl_von_Federn+1);
 		System.out.flush(); 
