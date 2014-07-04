@@ -27,7 +27,8 @@ public class NN{
 	public int Zahl_von_der_BM;
 	public topologischeBoltzmannmaschine EBM,MBM;
 	public Interface Schnittstelle0;
-	public Interface2 Schnittstelle;
+	public Interface2 Schnittstelle;  
+	private double alles_ist_null=0;//für die Überprüfung neuer Beziehungen
 	 
 	
 	public  NN(Pfeiler pf){
@@ -347,7 +348,7 @@ public class NN{
 					M.Beziehungen[a].Ruhe();
 				}
 			for(int jj=0;jj<Zahl_von_der_BM;jj++) 
-				BM[jj].schuetteln(wie_viel);
+				BM[jj].schuetteln(wie_viel*alles_ist_null);
 			}
 	}
 	
@@ -439,22 +440,29 @@ public class NN{
 		BM=new topologischeBoltzmannmaschine[Zahl_von_der_BM]; 
 		int Reihen=20;
 		boolean waagerechte_Linie=true;
-		boolean genagelte_Linie=true;
+		boolean genagelte_Linie=true;// laufend6.6.2014
+		boolean genagelte_Linien=false;// laufend6.6.2014
 		double kleiner=1;//Es ist eine zu machende Sache
-		int ins_Rad=0;
+		int Sorte_von_Schnittstelle=Interface2.Links; 
+		int ins_Rad=4;
 		boolean Rad=(ins_Rad!=0); 
 		for(int jj=0;jj<Zahl_von_der_BM;jj++)
-			BM[jj]=new topologischeBoltzmannmaschine((waagerechte_Linie?(Reihen-ins_Rad):0)+
-													  (Reihen-1)+
-													   (genagelte_Linie?(Reihen-1):0),
+			BM[jj]=new topologischeBoltzmannmaschine((waagerechte_Linie? (Reihen-ins_Rad):0)+
+														(genagelte_Linie? (Reihen-1):0)+
+														(genagelte_Linien?(Reihen-1):0)+
+														ins_Rad+
+														(Reihen-1),
 														Reihen);
 		EBM=BM[0];
 		if(!nurEBM)  
 			MBM=BM[1];    
 		else 
 			 MBM=EBM;  
+		Pottsnagel.Anfang();
 		for(int bm=0;bm<(nurEBM?1:2);bm++)
 			{
+			Pottsnagel Potts1=new Pottsnagel(); 
+			Pottsnagel Potts2=new Pottsnagel();  
 			int Nummer_von_Beziehung,dieGruppe;
 			int i; 
 			Stelle[] variables=BM[bm].variables; 
@@ -462,22 +470,34 @@ public class NN{
 			for(Nummer_von_Beziehung=0,i=0,dieGruppe=0;dieGruppe<EBM.Reihe();i+=4,dieGruppe++)
 				{
 				if(waagerechte_Linie)
-					if((dieGruppe+ins_Rad<EBM.Reihe()))
-						Beziehungen[Nummer_von_Beziehung++]=new Lineal (0.03,new Stelle[]{ 
+					if((dieGruppe+ins_Rad<EBM.Reihe()))     // mit den unteren Sachen verknüpft            
+						Beziehungen[Nummer_von_Beziehung++]=new Lineal (0.03*laufend6/*laufend6.6.2014*/*alles_ist_null,new Stelle[]{ 
 							variables[i+0],variables[i+1],variables[i+2],variables[i+3]}	);
 				if(dieGruppe+1<EBM.Reihe())//nicht die Letzte
 					{
 						if(genagelte_Linie)
-					Beziehungen[Nummer_von_Beziehung++]=new genagelte_Feder(0.0000001,new Stelle[]{ 
-											variables[4+i+2],variables[4+i+3]},
-											dieGruppe*topologischeBoltzmannmaschine.Abstand_zw(),
-											(200-110+30)/kleiner);
-					if((dieGruppe+ins_Rad+1<EBM.Reihe())) 
-					Beziehungen[Nummer_von_Beziehung++]=new senkrechte_Feder(0.01,new Stelle[]{ 
-						variables[0+i+2],variables[0+i+3],variables[4+i+2],variables[4+i+3]}	); 
-					else 
-					Beziehungen[Nummer_von_Beziehung++]=new Quadratfeder(0.1,new Stelle[]{ 
-						variables[0+i+2],variables[0+i+3],variables[4+i+2],variables[4+i+3]}	);
+						{
+							Beziehungen[Nummer_von_Beziehung++]=Potts1.hinzufuegen(new genagelte_Feder(3,new Stelle[]{ 
+													variables[4+i+2],variables[4+i+3]},
+													dieGruppe*topologischeBoltzmannmaschine.Abstand_zw(),
+													(200-110+30+Math.sin(dieGruppe)*11)/kleiner)); 
+						}
+																	
+						if(genagelte_Linien)
+						{ 
+							Beziehungen[Nummer_von_Beziehung++]=Potts2.hinzufuegen(new genagelte_Feder(3, new Stelle[]{ 
+													variables[4+i+2],variables[4+i+3]},
+													dieGruppe*topologischeBoltzmannmaschine.Abstand_zw(),
+													(200-110-10-Math.sin(dieGruppe)*11)/kleiner)); 
+							 
+						} 
+					Beziehungen[Nummer_von_Beziehung++]=new senkrechte_Feder(0.01*laufend6/*laufend6.6.2014*/*alles_ist_null,new Stelle[]{ 
+							variables[0+i+2],variables[0+i+3],variables[4+i+2],variables[4+i+3]}	); 
+					if(!(dieGruppe+ins_Rad+1<EBM.Reihe())) //Räder
+						Beziehungen[Nummer_von_Beziehung++]=new Quadratfeder(((alles_ist_null*Sorte_von_Schnittstelle==Interface2.Fuers_Rad)?10:1)
+																		*0.0000001/(Math.pow(ins_Rad,1.5)),
+																new Stelle[]{ 
+								variables[0+i+2],variables[0+i+3],variables[4+i+2],variables[4+i+3]}	);
 					}
 				}  
 			} 
@@ -492,7 +512,7 @@ public class NN{
 				Schnittstelle0=new Interface(EBM,MBM,1,new Beziehung[]{ b2 });
 			else
 				Schnittstelle0=new Interface(EBM,MBM,2,new Beziehung[]{ b1,b2});	 
-			Schnittstelle=new Interface2(BM,Zahl_von_der_BM,Interface2.Links); 
+			Schnittstelle=new Interface2(BM,Zahl_von_der_BM,Sorte_von_Schnittstelle); 
 			} 
 		kleinen_Fehler(1); 
 		}
@@ -995,8 +1015,7 @@ public void druecken(boolean Galileo)
 	}
 	Spannung=Spannung-Länge*Länge;
 	
-	double change=//Steifheit*
-	     0.001*Spannung; 
+	double change=Steifheit*Spannung; 
 	EntfernungX*=change; 
 	EntfernungY*=change; 
 	
@@ -1156,56 +1175,185 @@ static double FederDruckKraft4545(double x)
 
 }
  
-
-class genagelte_Feder extends Beziehung{ 
-		double Länge;
+class genagelte_Feder extends Beziehung{    //bitte sei innere Klasse von Pottsnagel
 		double ZentrumX,ZentrumY;
-		public double Steifheit;
+		public  double Steifheit;
+		public  double Treibung;
+		private double minus_Steifheit_hoch_zwei; 
+		private Pottsnagel Potts;  
 	 
+public genagelte_Feder(Stelle[] array,double x,double y){
+	this(10,array,x,y); 
+			//	http://de.wikipedia.org/wiki/aperiodischer_Grenzfall  
+			// Steifheit>=13 : Schwingung durch falscher Diskretizierung. Danach platzt es.
+			// Steifheit=12   : Es hat ´ne sehr gute Diskretizierung.  
+			// Steifheit=0.03 : Es hat ´ne sehr gute Diskretizierung und ist langsam.
+			// Steifheit<0  : Es platzt.
+	}
 public genagelte_Feder(double Steifheit,Stelle[] array,double x,double y){
+	this(Steifheit,1,array,x,y); 			
+			//  ohne Diskretizierung/theoritisch : 0<=Steifheit<=1  => immer kleiner
+			//	Treibung=1 => den aperiodischen Grenzfall . Treibung=0=>sin. Treibung=0.1=>einige Schwingungen
+			//  Treibung>>0.01 => alles zu klingt schnell ab
+}
+public genagelte_Feder(double Steifheit,double Treibung,Stelle[] array,double x,double y){
 	super(2,array); 
+	Potts=null;
 	this.Steifheit=Steifheit;
+	this.Treibung=Treibung;
+	minus_Steifheit_hoch_zwei=-this.Steifheit*this.Steifheit;
 	ZentrumX=x;
-	ZentrumY=y;
-	Länge=10;
-	Ruhe();
+	ZentrumY=y; 
+	if(false){//"false" weil es sowieso zerquetscht werden wird
+		Ruhe(); 
+		if(false){
+			variables[0].Kommazahl=ZentrumX; 
+			variables[1].Kommazahl=ZentrumY+10; 
+			variables[0].v=0;
+			variables[1].v=0; 
+		}
+	}
 	} 
 public void Ruhe()
 	{
 		if(true){
 	variables[0].Kommazahl=ZentrumX; 
-	variables[1].Kommazahl=ZentrumY+Länge; 
+	variables[1].Kommazahl=ZentrumY+10; 
 		}
 	variables[0].v=0;
-	variables[1].v=0;
-	variables[0].a=0;
-	variables[1].a=0;
+	variables[1].v=0; 
 	}
-public void druecken(boolean Galileo)
+public void druecken(boolean Galileo)//Galileo wird nicht benutzt
 	{  
-	double ySpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
-						variables[1].Kommazahl-ZentrumY); 
+	if(!Habe_ich_einen_Pottsnagel()){  
+		if(true)//if(es eine innere Klasse von Pottsnagel ist)
+			druecken_fuer_PN(Galileo);
+		else
+			throw new AssertionError("?!?!?");
+		return;
+	}
+	mein_Pottsnagel().druecken_wenn_nicht_schon_gemacht();
+	} 
+public void druecken_fuer_PN(boolean Galileo)//Galileo wird nicht benutzt
+	{   
 	double xSpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
 						variables[0].Kommazahl-ZentrumX);  
-	double Spannung=sqrt(xSpannung*xSpannung+ySpannung*ySpannung);
-	xSpannung/=Spannung;
-	ySpannung/=Spannung;
-	Spannung=Spannung-Länge;
-	Spannung*=Spannung;
-	xSpannung*=Spannung;
-	ySpannung*=Spannung;
-	
-	double change=100* 
-		 (ySpannung)*Steifheit;  
-	variables[1].hinzufuegt(-change,Galileo); 
-		 
-	change=100* 
-		 (xSpannung)*Steifheit;   
-	variables[0].hinzufuegt(-change,Galileo); 
-	} 	
-	
+	double ySpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
+						variables[1].Kommazahl-ZentrumY);  
+	double T=-2*Treibung*Steifheit;//um das Rechnen zu beschleunigen
+	variables[0].hinzufuegt(T*variables[0].v+minus_Steifheit_hoch_zwei*xSpannung,true);  
+	variables[1].hinzufuegt(T*variables[1].v+minus_Steifheit_hoch_zwei*ySpannung,true);  
+	}
+public double passt()//Gasdökasjölashdlahsdlkhasdhalileo wird nicht benutzt
+	{   
+	double xSpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
+						variables[0].Kommazahl-ZentrumX);  
+	double ySpannung=topologischeBoltzmannmaschine.ausgerichtete_Entfernung(
+						variables[1].Kommazahl-ZentrumY); 
+	return xSpannung*xSpannung+ySpannung*ySpannung; 
+	}
+public boolean Habe_ich_einen_Pottsnagel()
+	{
+	return !(Potts==null);
+	}
+public Pottsnagel mein_Pottsnagel()
+	{
+	if(!Habe_ich_einen_Pottsnagel())
+		throw new AssertionError("if ...");
+	return Potts;
+	}
+public void mein_Pottsnagel(Pottsnagel P)
+	{
+	if(Potts!=null)
+		if(P!=Potts)
+			throw new AssertionError();
+	Potts=P;
+	}
 }
 
+class Pottsnagel{
+	private genagelte_Feder[] die_genagelte_Federn;
+	private int Zahl_von_Federn;  
+	private int Wie_viel;
+	private final int MAX=20;
+	public double in;
+	public double erste_Steifheit;
+	public double Wert;
+	public double compute_in()
+	{
+		double Ergebnis=0;   
+		for(int N=0;N<Zahl_von_Federn;N++)
+			Ergebnis+=die_genagelte_Federn[N].passt()  ;
+		in=Ergebnis;
+		if(false)System.out.println(in);
+		return in;
+	}
+	public void press()
+	{
+		if(compute_in()<10*10*30)
+			set_Stei(erste_Steifheit*Wert);
+ else
+			set_Stei(erste_Steifheit);
+	}
+	public void set_Stei(double Steifheit)
+	{
+		for(int N=0;N<Zahl_von_Federn;N++)
+			die_genagelte_Federn[N].Steifheit=Steifheit;
+	}
+	public Pottsnagel(){
+		Zahl_von_Federn=0;
+		die_genagelte_Federn=new genagelte_Feder[MAX]; 
+		Wie_viel=0;
+		Wert=0.1;
+		if(wir_sind==0)
+			uns=new Pottsnagel[40]; 
+		if(wir_sind==40)
+			throw new AssertionError();
+		uns[wir_sind++]=this; 
+		System.out.println("Wir sind "+wir_sind); 
+		System.out.flush(); 
+		}
+	public genagelte_Feder hinzufuegen(genagelte_Feder F)
+		{
+		F.mein_Pottsnagel(this);
+		System.out.println("Zahl_von_Federn "+Zahl_von_Federn );
+		if(Zahl_von_Federn+1>MAX)
+			System.out.println("Bitte: sei Pottsnagel.MAX nicht < "+Zahl_von_Federn+1);
+		System.out.flush(); 
+		die_genagelte_Federn[Zahl_von_Federn++]=F;
+		erste_Steifheit=F.Steifheit;
+		return F;
+		}
+	public void druecken_wenn_nicht_schon_gemacht()
+		{   
+		boolean Ich_habe_schon_gedrueckt=!(Wie_viel==0);
+		Wie_viel++;
+		if(!Ich_habe_schon_gedrueckt)
+			druecken();
+		if(Wie_viel>=Zahl_von_Federn)
+			Wie_viel=0;
+		}
+	private void druecken()
+		{     
+		for(int N=0;N<Zahl_von_Federn;N++)
+			die_genagelte_Federn[N].druecken_fuer_PN(false);
+		}  
+		
+	public static Pottsnagel[] uns;
+	public static int wir_sind; 
+	public static void Anfang()
+	{
+		wir_sind=0;
+		uns=null;
+	}
+	public static void pressAll()
+	{
+	if(wir_sind==0)
+		return;
+	for(int u=0;u<wir_sind;u++)
+		uns[u].press();
+	}
+}
 
 class Interface extends BoltzmannmaschineOderInterface 
 {
@@ -1309,7 +1457,7 @@ else
 		for(int bm=0;bm<Zahl_von_der_BM;bm++)
 			Maschine[bm].druecken(NN.Galileo);
 				
-		
+		Pottsnagel.pressAll();
 		for(int bm=0;bm<Zahl_von_der_BM;bm++)
 				{ 
 				boolean nach_Galileo=true;
@@ -1549,8 +1697,7 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 	public void schuetteln(double wie_viel)
 		{ 
 		if(!die_Grenzen_verbessern)
-		{
-		if(wie_viel==1) 
+		{ 
 			{ 
 			for(int i=0;i<number_of_variables;i++) 
 				{
@@ -1582,7 +1729,7 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 						if( (in_der_Reihe==Reihe-1))
 							variables[z+3].v=(Math.random()*2-1)*1/kleiner; 
 					if((in_der_Reihe>2.*Reihe/5)&&(in_der_Reihe<3.*Reihe/5))
-						variables[z+3].v+=Math.random()*20/kleiner;   
+						variables[z+3].v+=Math.random()*20*wie_viel/kleiner;   
 					}
 				} 
 			} 
@@ -1595,8 +1742,7 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 		}
 		else
 		if(die_Grenzen_verbessern)
-		{
-		if(wie_viel==1) 
+		{ 
 			{ 
 			for(int i=0;i<number_of_variables;i++) 
 				{
@@ -1808,7 +1954,7 @@ class Interface2 extends BoltzmannmaschineOderInterface{
 					der_Durchschnitt.v+=		dieMenge.Beruehrten[bm].v*wie_viel; 
 					der_Durchschnitt.a+=		dieMenge.Beruehrten[bm].a*wie_viel; 
 				}			
-			}//http://de.wikipedia.org/wiki/Aperiodischer_Grenzfall
+			}//bitte den aperiodischen Grenzfall von genagelt.. hierher implementieren 
 			for(int Mn=0;Mn<Zahl_von_der_Mengen;Mn++){//ihres Erzwingen 
 				Menge dieMenge=Mengen[Mn];
 				Stelle der_Durchschnitt=dieMenge.der_Durchschnitt(); 

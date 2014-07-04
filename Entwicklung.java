@@ -33,9 +33,12 @@ public final class Entwicklung  {
 	public static final boolean   paintPB = true; 
 	//Verbesserung: wErden	variables =Variablen  MENGE(n)->Gruppen
 	//Verbesserung:  Mange.var======STELLE   		
+	//Verbesserung:  innere Klasse von Pottsnagel  		
 	public static final  boolean vernicht_mich_455465465465=true;
 	public static final  boolean vernicht_mich_684684544215=true;
 	public static final  boolean vernicht_mich_871767116977=true;
+	public static final  double laufend6=0;
+	
 	
   private Entwicklung(){
     //this prevents even the native class from 
@@ -49,6 +52,7 @@ public static void main(String args[]) {
 
 /*
  * laufend:   laufend4784864684864684684684687 -> true 
+ * laufend:   laufend6.6.2014    Ladegerät
  * 
  */
 }
