@@ -436,8 +436,8 @@ public class NN{
 			Zahl_von_der_BM=2;
 		BM=new topologischeBoltzmannmaschine[Zahl_von_der_BM]; 
 		int Reihen=20;
-		boolean waagerechte_Linie=false; 
-		int ins_Rad=1;
+		boolean waagerechte_Linie=true;
+		int ins_Rad=0;
 		boolean Rad=(ins_Rad!=0); 
 		for(int jj=0;jj<Zahl_von_der_BM;jj++)
 			BM[jj]=new topologischeBoltzmannmaschine((waagerechte_Linie?(Reihen-ins_Rad):0)+(Reihen-1),
@@ -475,8 +475,8 @@ public class NN{
 			boolean choice=true;
 			Beziehung b1=null;
 			if(!choice)
-				b1=new ausgerichtete_Feder(0.02*0,new Stelle[]{EBM.variables[6],EBM.variables[7],MBM.variables[6],MBM.variables[7]});
-		 	Beziehung b2=new ausgerichtete_Feder(0.08,new Stelle[]{EBM.variables[2],EBM.variables[3],MBM.variables[2],MBM.variables[3]});
+				b1=new ausgerichtete_Feder(0.002*0,new Stelle[]{EBM.variables[6],EBM.variables[7],MBM.variables[6],MBM.variables[7]});
+		 	Beziehung b2=new ausgerichtete_Feder(0.008,new Stelle[]{EBM.variables[2],EBM.variables[3],MBM.variables[2],MBM.variables[3]});
 			if(choice )
 				Schnittstelle= new Interface(EBM,MBM,1,new Beziehung[]{ b2 });
 			else
@@ -914,8 +914,8 @@ public Feder(double dieSteifheit,Stelle[] array){
 	} 
 public void Ruhe()
 	{
-	variables[2].Kommazahl=variables[0].Kommazahl+Länge*Math.cos(+0.3); 
-	variables[3].Kommazahl=variables[1].Kommazahl+Länge*Math.sin(+0.3); 
+	variables[2].Kommazahl=variables[0].Kommazahl-Länge*Math.cos(-0.1); 
+	variables[3].Kommazahl=variables[1].Kommazahl-Länge*Math.sin(-0.1); 
 	}
 public void druecken(boolean Galileo)
 	{  
@@ -1182,15 +1182,7 @@ class Interface extends BoltzmannmaschineOderInterface
 		if(Schnittstelle!=null) 
 			if(NN.uebereinstimmen)
 			  Schnittstelle.druecken();   
-			Maschine[0].druecken(NN.Galileo);
-		for(int bm=1;bm<Zahl_von_der_BM;bm++)
-			for(int u=0;u<4;u++)
-				{
-				Maschine[bm].variables[u].setzt_a_fest( Maschine[0].variables[u].gibt_a());  
-				Maschine[bm].variables[u].v= 		     Maschine[0].variables[u].v;  
-				Maschine[bm].variables[u].Kommazahl=    Maschine[0].variables[u].Kommazahl;  
-				} 
-		for(int bm=1;bm<Zahl_von_der_BM;bm++)
+		for(int bm=0;bm<Zahl_von_der_BM;bm++)
 			Maschine[bm].druecken(NN.Galileo);
 			
 		
@@ -1293,7 +1285,7 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 		this.Dimension=Dimension;
 		this.Spalt=Spalt;
 		this.Leerstelle=Leerstelle;	
-		this.Torus=true; 
+		this.Torus=false; 
 		if(Beispiel==null)
 			Beispiel=this;
 	}
@@ -1330,7 +1322,7 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 			if(Torus)
 			{
 				while( vari.Kommazahl <0) 
-					vari.Kommazahl+=B;
+				vari.Kommazahl+=B;
 				vari.Kommazahl%=B;
 			}
 			else
@@ -1338,10 +1330,8 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 				if( vari.Kommazahl <0) 
 					vari.Kommazahl=0;
 				else
-				if(vari.Kommazahl>B-1)
-				vari.Kommazahl=B-1;
-				if(vari.Kommazahl>B-11)//sonst kann es nicht sehen   546846874684864
-				vari.Kommazahl=B-11;
+				if(vari.Kommazahl>B)
+				vari.Kommazahl=B;
 			}
 			}
 		}
@@ -1397,7 +1387,7 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 				variables[i].v=0; 
 				}
 			}
-			if(false)//Beschleunigung am Amfang
+			if(true)//Beschleunigung am Amfang
 				{
 				variables[2].v=1; 
 				variables[3].v=3; 

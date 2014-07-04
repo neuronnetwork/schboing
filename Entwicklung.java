@@ -3,7 +3,8 @@
  *
  * Copyright (c) 2014, Jean-Michel lorenzi All Rights Reserved.
  * 
-*/ 
+*/
+//exit ->  clean   notifypageexit
 
 package dissipativeneuron;
 public final class Entwicklung  {  
@@ -29,10 +30,7 @@ public final class Entwicklung  {
 	//getParamsAndButtons   usueful for toggle ?
 	
 		public static final boolean  Verbesserung857872=false; 
-	public static final boolean   paintPB = true; 
-	//Verbesserung: wErden	variables =Variablen  MENGE(n)->Gruppen
-	//Verbesserung:  Mange.var======STELLE   		
-	public static final  boolean vernicht_mich_455465465465=true;
+			
 	
   private Entwicklung(){
     //this prevents even the native class from 
@@ -43,11 +41,7 @@ public final class Entwicklung  {
 public static void main(String args[]) {
 	//evolvePDE.main(args);
 ;}
-
-/*
- * laufend:   laufend4784864684864684684684687 -> true 
- * 
- * /
+  
 }
 
 

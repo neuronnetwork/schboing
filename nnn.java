@@ -340,7 +340,7 @@ public class NN{
 				return ;//throw new AssertionError("Es gibt keine Maschinen!");
 			for(int jj=0;jj<Zahl_von_der_BM;jj++) 
 				BM[jj].schuetteln(wie_viel);
-			for(int jj=0;jj<Zahl_von_der_BM;jj++)
+	for(int jj=0;jj<Zahl_von_der_BM;jj++)
 				{
 				Boltzmannmaschine M=BM[jj];
 				for(int a=0;a<M.Zahl_Von_Beziehungen;a++)
@@ -435,9 +435,9 @@ public class NN{
 		else
 			Zahl_von_der_BM=2;
 		BM=new topologischeBoltzmannmaschine[Zahl_von_der_BM]; 
-		int Reihen=20;
-		boolean waagerechte_Linie=false; 
-		int ins_Rad=1;
+		int Reihen=30;
+		boolean waagerechte_Linie=true;
+		int ins_Rad=5;
 		boolean Rad=(ins_Rad!=0); 
 		for(int jj=0;jj<Zahl_von_der_BM;jj++)
 			BM[jj]=new topologischeBoltzmannmaschine((waagerechte_Linie?(Reihen-ins_Rad):0)+(Reihen-1),
@@ -475,8 +475,8 @@ public class NN{
 			boolean choice=true;
 			Beziehung b1=null;
 			if(!choice)
-				b1=new ausgerichtete_Feder(0.02*0,new Stelle[]{EBM.variables[6],EBM.variables[7],MBM.variables[6],MBM.variables[7]});
-		 	Beziehung b2=new ausgerichtete_Feder(0.08,new Stelle[]{EBM.variables[2],EBM.variables[3],MBM.variables[2],MBM.variables[3]});
+				b1=new ausgerichtete_Feder(0.002*0,new Stelle[]{EBM.variables[6],EBM.variables[7],MBM.variables[6],MBM.variables[7]});
+		 	Beziehung b2=new ausgerichtete_Feder(0.008,new Stelle[]{EBM.variables[2],EBM.variables[3],MBM.variables[2],MBM.variables[3]});
 			if(choice )
 				Schnittstelle= new Interface(EBM,MBM,1,new Beziehung[]{ b2 });
 			else
@@ -836,9 +836,9 @@ public abstract void druecken(boolean Galileo);
 public void druecken(){
 	druecken(NN.Galileo);
 }
-public void Ruhe()
-	{
-	}
+
+
+
 	
 }
 
@@ -909,13 +909,13 @@ class Feder extends kuerze_Feder{
 	 
 public Feder(double dieSteifheit,Stelle[] array){
 	super(dieSteifheit,array);
-	Länge=10;
+	Länge=50;
 	Ruhe();
 	} 
 public void Ruhe()
 	{
-	variables[2].Kommazahl=variables[0].Kommazahl+Länge*Math.cos(+0.3); 
-	variables[3].Kommazahl=variables[1].Kommazahl+Länge*Math.sin(+0.3); 
+	variables[2].Kommazahl=variables[0].Kommazahl-Länge*Math.cos(-0.1); 
+	variables[3].Kommazahl=variables[1].Kommazahl-Länge*Math.sin(-0.1); 
 	}
 public void druecken(boolean Galileo)
 	{  
@@ -1182,15 +1182,7 @@ class Interface extends BoltzmannmaschineOderInterface
 		if(Schnittstelle!=null) 
 			if(NN.uebereinstimmen)
 			  Schnittstelle.druecken();   
-			Maschine[0].druecken(NN.Galileo);
-		for(int bm=1;bm<Zahl_von_der_BM;bm++)
-			for(int u=0;u<4;u++)
-				{
-				Maschine[bm].variables[u].setzt_a_fest( Maschine[0].variables[u].gibt_a());  
-				Maschine[bm].variables[u].v= 		     Maschine[0].variables[u].v;  
-				Maschine[bm].variables[u].Kommazahl=    Maschine[0].variables[u].Kommazahl;  
-				} 
-		for(int bm=1;bm<Zahl_von_der_BM;bm++)
+		for(int bm=0;bm<Zahl_von_der_BM;bm++)
 			Maschine[bm].druecken(NN.Galileo);
 			
 		
@@ -1222,10 +1214,11 @@ abstract class BoltzmannmaschineOderInterface
 	this.Zahl_Von_Beziehungen=Zahl_Von_Beziehungen; 
 	}		 
 	protected void druecken(boolean Galileo)
-	{     		int i=-1;	try{ 
-			for(i=0;i<Zahl_Von_Beziehungen;i++)  
-				Beziehungen[i].druecken(Galileo);   }catch(java.lang.NullPointerException e)
-				{System.out.println(i);}
+
+	{     			 
+			for(int i=0;i<Zahl_Von_Beziehungen;i++)  
+				Beziehungen[i].druecken(Galileo);   
+
 	} 
 		
 }
@@ -1279,41 +1272,34 @@ class Boltzmannmaschine extends BoltzmannmaschineOderInterface
 class topologischeBoltzmannmaschine extends Boltzmannmaschine
 { 
 	private int Reihe,Gruppe,Dimension;
-	private double Spalt,Leerstelle;
+	private double Abstand,Spalt;
 	public boolean Torus;  
 	public topologischeBoltzmannmaschine(int Beziehungen,int Reihe)
 	{
-		this(Beziehungen,Reihe,2/*Spalt*/,80/*Leerstelle*/,2/*Gruppe*/,2/*Dimension*/); 
+		this(Beziehungen,Reihe,5/*Abstand*/,80/*Spalt*/,2/*Gruppe*/,2/*Dimension*/); 
 	}
-	public topologischeBoltzmannmaschine(int Beziehungen,int Reihe,double Spalt,double Leerstelle,int Gruppe,int Dimension)
+
+	
+	public topologischeBoltzmannmaschine(int Beziehungen,int Reihe,double Abstand,double Spalt,int Gruppe,int Dimension)
 	{
-		super(Beziehungen,Reihe*Gruppe*Dimension);
-		this.Reihe=Reihe;
-		this.Gruppe=Gruppe;
-		this.Dimension=Dimension;
-		this.Spalt=Spalt;
-		this.Leerstelle=Leerstelle;	
-		this.Torus=true; 
-		if(Beispiel==null)
-			Beispiel=this;
+	super(Beziehungen,Reihe*Gruppe*Dimension);
+	this.Reihe=Reihe;
+	this.Gruppe=Gruppe;
+	this.Dimension=Dimension;
+	this.Abstand=Abstand;
+	this.Spalt=Spalt;		
+
+
+
 	}
 	public double Breite(){
-		return Sache()*Reihe()+Spalt()*(Reihe()-1)+Leerstelle;
+		return Abstand()*Reihe()+Spalt;
 	}
-	public double dieser_Spalt(){
-		return Spalt;
-	}
-	public static double Spalt(){
-		return Beispiel().Spalt;
-	}
-	public double Abstand_zwischen_Kernen(){
-		return Spalt()+Sache();
+	public double Abstand(){
+		return Abstand;
 	}
 	public double Reihe(){
 		return Reihe;
-	}
-	public static int Sache(){
-		return 7;
 	}
 	public void setzt_neue_Stelle(boolean Galileo,Interface Schnittstelle,boolean ist_MBM)
 		{
@@ -1330,7 +1316,7 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 			if(Torus)
 			{
 				while( vari.Kommazahl <0) 
-					vari.Kommazahl+=B;
+				vari.Kommazahl+=B;
 				vari.Kommazahl%=B;
 			}
 			else
@@ -1338,75 +1324,63 @@ class topologischeBoltzmannmaschine extends Boltzmannmaschine
 				if( vari.Kommazahl <0) 
 					vari.Kommazahl=0;
 				else
-				if(vari.Kommazahl>B-1)
-				vari.Kommazahl=B-1;
-				if(vari.Kommazahl>B-11)//sonst kann es nicht sehen   546846874684864
-				vari.Kommazahl=B-11;
+				if(vari.Kommazahl>B)
+				vari.Kommazahl=B;
 			}
 			}
 		}
 		
-	public static double ausgerichtete_Entfernung(double E)
-	{
-		return Beispiel().ausgerichtete_Entfernung_0(E); 
-	}
-	private static topologischeBoltzmannmaschine Beispiel;
-	public  static topologischeBoltzmannmaschine Beispiel()
-	{
-		if(Beispiel==null)
-			throw new AssertionError("topologischeBoltzmannmaschine.Beispiel->java.lang.NullPointerException");
-		return Beispiel;
-	}
-	private double ausgerichtete_Entfernung_0(double E)
-	{
-		if(!Torus) 
-			return E;
-		double B;
-		if( 2*E>(B=Breite()))
-			return Breite()-E;  
-		if(-2*E>Breite())
-			return Breite()+E;  
-		// nem (| b - a | > E/2)
-		if(!Torus) throw new AssertionError("Implementieren die Entfernung für Nichtori!");
-		return E;
-	}
+
+
+
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		
 	public void schuetteln(double wie_viel)
-		{ 
+		{
+		double Ab=Abstand()/4; 
+
 		if(wie_viel==1) 
 			{ 
-			double kleiner=256/Breite();
 			int z;
 			int in_der_Reihe;
 			for(z=0,in_der_Reihe=0;z<number_of_variables;z+=Gruppe*Dimension,in_der_Reihe++)
 				{
-				variables[z]  .Kommazahl=in_der_Reihe*Abstand_zwischen_Kernen();
-				variables[z+1].Kommazahl=200/kleiner;
-				variables[z+2].Kommazahl=in_der_Reihe*Abstand_zwischen_Kernen();
-				variables[z+3].Kommazahl=(200-110)/kleiner;
+				variables[z]  .Kommazahl=z*Ab;
+				variables[z+1].Kommazahl=200;
+				variables[z+2].Kommazahl=z*Ab;
+				variables[z+3].Kommazahl=200-110;
 				if(in_der_Reihe==0) 
-					variables[z+3].Kommazahl+=(Math.random()*2-1)*20/kleiner;   
-				if((in_der_Reihe>2.*Reihe/5)&&(in_der_Reihe<3.*Reihe/5))
-					variables[z+3].Kommazahl+=Math.random()*109/kleiner;   
+					variables[z+3].Kommazahl+=Math.random()*40*2-40;   
+				if(in_der_Reihe>4.*Reihe/5)
+					variables[z+3].Kommazahl+=Math.random()*109;   
 				} 
-			for(int i=0;i<number_of_variables;i++) 
+			for(int i=0;i<	number_of_variables;i++) 
 				{
 				variables[i].setzt_a_fest(0); 
 				if(!NN.Galileo)
 					variables[i].setzt_a_fest(0,false); 
 				variables[i].v=0; 
 				}
-			}
-			if(false)//Beschleunigung am Amfang
-				{
-				variables[2].v=1; 
-				variables[3].v=3; 
-				}
-			for(int z=0 ;z<number_of_variables;z+=Dimension ){
-				int x=(int)variables[z]    .Kommazahl;
-				int y=(int)variables[z+1]  .Kommazahl; 
-				if((x<0)||(!(x<Breite()))||(y<0)||(!(y<Breite())))
-					        throw new AssertionError("u   "+x+" "+y+" "+"x<0 oder ...");
 			}
 		}
 	
