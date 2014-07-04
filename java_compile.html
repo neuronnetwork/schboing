@@ -1,0 +1,124 @@
+﻿<!DOCTYPE HTML>
+<html><head>
+
+  
+    <title>JXXX Compiler Service</title>
+    <!-- base href="http://www.innovation.ch/java/java_compile.html" -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="author" href="mailto:ronald@innovation.ch">
+    <link rel="previous" href="http://www.innovation.ch/java/welcome.html">
+    <style type="text/css">
+     
+    </style>
+  </head><body>  
+
+    <form enctype="multipart/form-data" method="POST" action="http://www.innovation.ch/cgi-bin/java_compile">
+      <table>
+	<tbody><tr>
+ 	  <td>Source file 1:</td> 
+ <td><input size="30" name="srcfile" accept="text/x-java"   multiple="multiple"  type="file"></td> 
+	</tr>
+	  <td>	</tr>
+	<tr>
+	  <td>Source file 2:</td>
+	  <td><input size="30" name="srcfile" accept="text/x-java-source,text/java,text/x-java,text/ms-java"   multiple="multiple"  type="file"></td> 
+	</tr>
+	<tr>
+	  <td>Source file 3:</td>
+	  <td><input size="30" name="srcfile" value="" accept="text/x-java-source,text/java,text/x-java,text/ms-java" multiple="multiple" type="file"></td> 
+	</tr>
+	<tr>
+	  <td>Source file 4:</td>
+	  <td><input size="30" name="srcfile" accept="text/x-java-source,text/java,text/x-java,text/ms-java" multiple="multiple" type="file"></td> 
+	</tr>
+	<tr>
+	  <td>Source file 5:</td>
+	  <td><input size="30" name="srcfile" accept="text/x-java-source,text/java,text/x-java,text/ms-java"  value="Z:\test\FHN.java"  type="file"></td>
+	</tr>
+	<tr>
+	<tr>
+	  <td>Source file  :</td>
+	  <td><input size="30" name="srcfile" accept="text/x-java-source,text/java,text/x-java,text/ms-java"  value="Z:\test\FHN.java"  type="file"></td>
+	</tr>
+	<tr>
+	<tr>
+	  <td>Source file  :</td>
+	  <td><input size="30" name="srcfile" accept="text/x-java-source,text/java,text/x-java,text/ms-java"  value="Z:\test\FHN.java"  type="file"></td>
+	</tr>
+	<tr>
+	<tr>
+	  <td>Source file  :</td>
+	  <td><input size="30" name="srcfile" accept="text/x-java-source,text/java,text/x-java,text/ms-java"  value="Z:\test\FHN.java"  type="file"></td>
+	</tr>
+	<tr>
+	<tr>
+	  <td>Source file  :</td>
+	  <td><input size="30" name="srcfile" accept="text/x-java-source,text/java,text/x-java,text/ms-java"  value="Z:\test\FHN.java"  type="file"></td>
+	</tr>
+	<tr>
+	  <td>Source file 6:</td>
+	  <td><input size="30" name="srcfile"  accept="text/x-java-source,text/java,text/x-java,text/ms-java"  value="Z:\test\evolvePDE.java" multiple="multiple"   type="file" ></td> 
+	</tr>
+	<tr>
+	 
+	</tr>
+	<tr>
+	  <td></td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td>Jar file 1:</td>
+	  <td><input size="30" name="libfile" accept="application/java-archive,application/x-jar,application/x-compressed" multiple="multiple" type="file"></td>
+	</tr> 
+      </tbody></table>
+ 
+ <tr>
+	  <td>Display file:</td>
+	<td><input size="30" name="htmlfile"     type="file"></td>
+	</tr>
+	<tr>  
+      <p> 
+      </p><dl>
+	<dd><input value="-g" name="opt" type="checkbox">       -g
+	(generate debugging tables)
+	</dd><dd><input checked="checked" value="-O" name="opt" type="checkbox">       -O
+	(Optimize)
+	</dd><dd><input value="-nowarn" name="opt" type="checkbox">  -nowarn
+	(don't print any warnings)
+	</dd><dd><input value="-verbose" name="opt" type="checkbox"> -verbose
+	(talk a lot)
+	</dd><dd><input value="-deprecation" name="opt" type="checkbox"> -deprecation
+	(enables deprecation warnings)
+	
+	
+		 
+	  
+	 
+	  <input  checked="checked" value="-J-Xms48m" name="opt" type="checkbox">   
+	    <input   value="-classpath" name="opt" type="checkbox">   
+	    <input   value="-classpath" name="opt" type="checkbox">   
+       <input   value=".;org.math.plot/;dissipativeneuron" name="opt" type="checkbox">   
+    
+	   
+	   
+	   
+      </dd></dl>
+
+      <p>
+      JDK Version:
+      <input name="jdk_version" value="1.3.1" type="radio"> 1.3.1 &nbsp;&nbsp;
+      <input name="jdk_version" value="1.4.2" type="radio"> 1.4.2 &nbsp;&nbsp;
+      <input checked="checked" name="jdk_version" value="1.5.0" type="radio"> 1.5.0 &nbsp;&nbsp;
+      <input name="jdk_version" value="1.6.0" type="radio"> 1.6.0 &nbsp;&nbsp;
+      <input name="jdk_version" value="1.7.0" type="radio"> 1.7.0 &nbsp;&nbsp;
+      <input name="jdk_version" value="1.8.0" type="radio"> 1.8.0 &nbsp;&nbsp;
+
+      </p><p><input value="Compile" type="submit"> or <input value="Reset" type="reset">
+    
+
+    </p><p>
+    </p><hr>
+
+     
+    </address>
+  </form></body></html>
