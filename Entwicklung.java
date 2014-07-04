@@ -29,13 +29,10 @@ public final class Entwicklung  {
 	//getParamsAndButtons   usueful for toggle ?
 	
 		public static final boolean  Verbesserung857872=false; 
-		public static final boolean  Verbesserung184684=false; 
 	public static final boolean   paintPB = true; 
 	//Verbesserung: wErden	variables =Variablen  MENGE(n)->Gruppen
 	//Verbesserung:  Mange.var======STELLE   		
 	public static final  boolean vernicht_mich_455465465465=true;
-	public static final  boolean vernicht_mich_684684544215=true;
-	public static final  boolean vernicht_mich_871767116977=true;
 	
   private Entwicklung(){
     //this prevents even the native class from 
@@ -50,7 +47,7 @@ public static void main(String args[]) {
 /*
  * laufend:   laufend4784864684864684684684687 -> true 
  * 
- */
+ * /
 }
 
 
